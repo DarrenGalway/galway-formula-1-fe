@@ -14,12 +14,12 @@ const Race = (race: IRace) => {
     DateTime.now().startOf('day') > DateTime.fromISO(race.date).startOf('day')
   return (
     <li
-      className={`flex border-b border-gray-800 p-4 ${
+      className={`grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
         isComplete && 'opacity-50'
       }`}
     >
-      <span className="flex-1">{race.raceName}</span>
-      <div className="flex-1 grid grid-cols-2">
+      <span>{race.raceName}</span>
+      <div className="grid grid-cols-2">
         <span className="border-b py-2 border-gray-800">FP1:</span>
         <span className="border-b py-2 border-gray-800">
           {formatDate(race.FirstPractice.date, race.FirstPractice.time)}
@@ -105,9 +105,9 @@ export const SchedulePage = () => {
           </button>
         </div>
 
-        <div className="flex p-4 text-gray-400 uppercase tracking-wider text-xs">
-          <span className="flex-1">Name</span>
-          <span className="flex-1">Date</span>
+        <div className="hidden lg:grid grid-col-s2 p-4 text-gray-400 uppercase tracking-wider text-xs">
+          <span>Name</span>
+          <span>Date</span>
         </div>
         {loading && <div className="flex justify-center">Loading...</div>}
         {!loading && (
