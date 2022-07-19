@@ -3,10 +3,11 @@ import { DateTime } from 'luxon'
 import { Layout } from '../components/Layout'
 import { IRace, IScheduleResponse } from '../types'
 
-const formatDate = (date: string) =>
-  DateTime.fromISO(date).toLocaleString(DateTime.DATE_HUGE)
-const formatTime = (time: string) =>
-  DateTime.fromISO(time).toLocaleString(DateTime.TIME_SIMPLE)
+const formatDate = (date: string, time: string) => {
+  const parsedDate = DateTime.fromISO(date).toLocaleString(DateTime.DATE_HUGE)
+  const parsedTime = DateTime.fromISO(time).toLocaleString(DateTime.TIME_SIMPLE)
+  return `${parsedDate} at ${parsedTime}`
+}
 
 const Race = (race: IRace) => {
   const isComplete =
@@ -19,52 +20,36 @@ const Race = (race: IRace) => {
     >
       <span className="flex-1">{race.raceName}</span>
       <div className="flex-1 grid grid-cols-2">
-        <span className="border-b border-gray-800">FP1:</span>
-        <span className="border-b border-gray-800">
-          {formatDate(race.FirstPractice.date)}
+        <span className="border-b py-2 border-gray-800">FP1:</span>
+        <span className="border-b py-2 border-gray-800">
+          {formatDate(race.FirstPractice.date, race.FirstPractice.time)}
         </span>
-        <span className="border-b border-gray-800">FP2:</span>
-        <span className="border-b border-gray-800">
-          {formatDate(race.SecondPractice.date)}
+        <span className="border-b py-2 border-gray-800">FP2:</span>
+        <span className="border-b py-2 border-gray-800">
+          {formatDate(race.SecondPractice.date, race.SecondPractice.time)}
         </span>
-        <span className="border-b border-gray-800">Quali:</span>
-        <span className="border-b border-gray-800">
-          {formatDate(race.Qualifying.date)}
-        </span>
-        {race.Sprint && (
+        {race.ThirdPractice && (
           <>
-            <span className="border-b border-gray-800">Sprint:</span>
-            <span className="border-b border-gray-800">
-              {formatDate(race.Sprint.date)}
+            <span className="border-b py-2 border-gray-800">FP3:</span>
+            <span className="border-b py-2 border-gray-800">
+              {formatDate(race.ThirdPractice.date, race.ThirdPractice.time)}
             </span>
           </>
         )}
-        <span>Race:</span>
-        <span>{formatDate(race.date)}</span>
-      </div>
-      <div className="flex-1 grid grid-cols-2 gap-2">
-        <span className="border-b border-gray-800">FP1:</span>
-        <span className="border-b border-gray-800">
-          {formatTime(race.FirstPractice.time)}
-        </span>
-        <span className="border-b border-gray-800">FP2:</span>
-        <span className="border-b border-gray-800">
-          {formatTime(race.SecondPractice.time)}
-        </span>
-        <span className="border-b border-gray-800">Quali:</span>
-        <span className="border-b border-gray-800">
-          {formatTime(race.Qualifying.time)}
+        <span className="border-b py-2 border-gray-800">Quali:</span>
+        <span className="border-b py-2 border-gray-800">
+          {formatDate(race.Qualifying.date, race.Qualifying.time)}
         </span>
         {race.Sprint && (
           <>
-            <span className="border-b border-gray-800">Sprint:</span>
-            <span className="border-b border-gray-800">
-              {formatTime(race.Sprint.time)}
+            <span className="border-b py-2 border-gray-800">Sprint:</span>
+            <span className="border-b py-2 border-gray-800">
+              {formatDate(race.Sprint.date, race.Sprint.time)}
             </span>
           </>
         )}
-        <span>Race:</span>
-        <span>{formatTime(race.time)}</span>
+        <span className="py-2">Race:</span>
+        <span className="py-2">{formatDate(race.date, race.time)}</span>
       </div>
     </li>
   )
@@ -123,7 +108,6 @@ export const SchedulePage = () => {
         <div className="flex p-4 text-gray-400 uppercase tracking-wider text-xs">
           <span className="flex-1">Name</span>
           <span className="flex-1">Date</span>
-          <span className="flex-1">Time</span>
         </div>
         {loading && <div className="flex justify-center">Loading...</div>}
         {!loading && (
