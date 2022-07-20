@@ -7,6 +7,10 @@
   Gatsby minimal TypeScript starter
 </h1>
 
+## Deployment
+
+[![Netlify Build](https://github.com/DarrenGalway/galway-formula-1-fe/actions/workflows/github-actions-deploy.yml/badge.svg)](https://github.com/DarrenGalway/galway-formula-1-fe/actions/workflows/github-actions-deploy.yml)
+
 ## 🚀 Quick start
 
 1.  **Create a Gatsby site.**
