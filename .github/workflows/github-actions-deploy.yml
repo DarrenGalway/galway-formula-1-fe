@@ -1,14 +1,13 @@
 name: Netlify Build
+
 on:
   schedule:
-    # Run at 01100 daily
     - cron: '00 11 * * *'
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Curl request
-        shell: bash
-        env:
+      - env:
           NETLIFY_DEPLOY_HOOK: ${{ secrets.NetlifyDeployHook }}
         run: curl -X POST -d {} "$NETLIFY_DEPLOY_HOOK"
