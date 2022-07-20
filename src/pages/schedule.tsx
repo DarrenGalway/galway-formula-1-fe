@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { DateTime } from 'luxon'
 import { Layout } from '../components/Layout'
-import { IRace, IScheduleResponse } from '../types'
+import { IRace } from '../types'
+import { graphql } from 'gatsby'
 
 const formatDate = (date: string, time: string) => {
   const parsedDate = DateTime.fromISO(date).toLocaleString(DateTime.DATE_HUGE)
@@ -54,29 +55,29 @@ const Race = (race: IRace) => {
     </li>
   )
 }
-export const SchedulePage = () => {
-  const [scheduleData, setSchedleData] = React.useState<IScheduleResponse>()
-  const [loading, setLoading] = React.useState(true)
+
+interface PageData {
+  data: {
+    schedule: {
+      data: IRace[]
+    }
+  }
+}
+
+export const SchedulePage = ({
+  data: {
+    schedule: { data },
+  },
+}: PageData) => {
   const [upcoming, setUpcoming] = React.useState(true)
-
-  React.useEffect(() => {
-    ;(async () => {
-      const response = await fetch(`${process.env.GATSBY_API_URL}/schedule`)
-      const { data } = await response.json()
-      setSchedleData(data)
-      setLoading(false)
-    })()
-  }, [])
-
-  const completedRaces = scheduleData
+  const completedRaces = data
     ?.filter(
       (race) =>
         DateTime.now().startOf('day') >
         DateTime.fromISO(race.date).startOf('day')
     )
     .reverse()
-
-  const upcomingRaces = scheduleData?.filter(
+  const upcomingRaces = data?.filter(
     (race) =>
       DateTime.now().startOf('day') < DateTime.fromISO(race.date).startOf('day')
   )
@@ -109,17 +110,61 @@ export const SchedulePage = () => {
           <span>Name</span>
           <span>Date</span>
         </div>
-        {loading && <div className="flex justify-center">Loading...</div>}
-        {!loading && (
-          <ul className="border border-gray-800 rounded">
-            {races?.map((race: IRace) => (
-              <Race {...race} key={race.raceName} />
-            ))}
-          </ul>
-        )}
+
+        <ul className="border border-gray-800 rounded">
+          {races?.map((race: IRace) => (
+            <Race {...race} key={race.raceName} />
+          ))}
+        </ul>
       </div>
     </Layout>
   )
 }
+
+export const query = graphql`
+  {
+    schedule {
+      data {
+        Circuit {
+          circuitName
+          circuitId
+          url
+          Location {
+            country
+            lat
+            locality
+            long
+          }
+        }
+        FirstPractice {
+          time
+          date
+        }
+        Qualifying {
+          date
+          time
+        }
+        SecondPractice {
+          date
+          time
+        }
+        Sprint {
+          date
+          time
+        }
+        ThirdPractice {
+          date
+          time
+        }
+        date
+        raceName
+        round
+        season
+        time
+        url
+      }
+    }
+  }
+`
 
 export default SchedulePage

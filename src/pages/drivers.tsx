@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { Layout } from '../components/Layout'
-import { IDriverStandings, IDriverStandingsResponse } from '../types'
+import { IDriverStandings } from '../types'
 import { getColor } from '../config/teams'
+import { graphql } from 'gatsby'
 
 const Driver = (driver: IDriverStandings) => (
   <li className="flex border-b border-gray-800 last:border-none p-4 text-gray-400">
@@ -22,20 +23,22 @@ const Driver = (driver: IDriverStandings) => (
   </li>
 )
 
-export const DriversPage = () => {
-  const [driversData, setDriversData] =
-    React.useState<IDriverStandingsResponse>()
-  const [loading, setLoading] = React.useState(true)
-
-  React.useEffect(() => {
-    ;(async () => {
-      const response = await fetch(`${process.env.GATSBY_API_URL}/drivers`)
-      const { data } = await response.json()
-      setDriversData(data[0])
-      setLoading(false)
-    })()
-  }, [])
-
+interface PageData {
+  data: {
+    drivers: {
+      data: {
+        DriverStandings: IDriverStandings[]
+        round: string
+        season: string
+      }
+    }
+  }
+}
+export const DriversPage = ({
+  data: {
+    drivers: { data },
+  },
+}: PageData) => {
   return (
     <Layout
       title="Drivers leaders"
@@ -59,17 +62,48 @@ export const DriversPage = () => {
             Points
           </span>
         </div>
-        {loading && <div className="flex justify-center">Loading...</div>}
-        {!loading && (
-          <ul className="border border-gray-800 rounded">
-            {driversData?.DriverStandings.map((driver) => (
-              <Driver {...driver} key={driver.Driver.driverId} />
-            ))}
-          </ul>
-        )}
+        <ul className="border border-gray-800 rounded">
+          {data?.DriverStandings.map((driver: any) => (
+            <Driver {...driver} key={driver.Driver.driverId} />
+          ))}
+        </ul>
       </div>
     </Layout>
   )
 }
+
+export const query = graphql`
+  {
+    drivers {
+      id
+      data {
+        DriverStandings {
+          Constructors {
+            constructorId
+            name
+            nationality
+            url
+          }
+          Driver {
+            code
+            dateOfBirth
+            driverId
+            familyName
+            nationality
+            givenName
+            permanentNumber
+            url
+          }
+          points
+          position
+          positionText
+          wins
+        }
+        round
+        season
+      }
+    }
+  }
+`
 
 export default DriversPage

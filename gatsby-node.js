@@ -1,58 +1,63 @@
-// const fetch = (...args) =>
-//   import(`node-fetch`).then(({ default: fetch }) => fetch(...args))
+const fetch = (...args) =>
+  import(`node-fetch`).then(({ default: fetch }) => fetch(...args))
 
-// exports.sourceNodes = async ({
-//   actions: { createNode },
-//   createContentDigest,
-// }) => {
-//   const response = await fetch(`http://${process.env.GATSBY_API_URL}/drivers`)
-//   const { data } = await response.json()
-//   createNode({
-//     id: `driver-data`,
-//     parent: null,
-//     children: [],
-//     data: data,
-//     internal: {
-//       type: `drivers`,
-//       contentDigest: createContentDigest(data),
-//     },
-//   })
-// }
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions
+  const types = `
+    type scheduleData {
+      Sprint: SprintType
+    }
+    type SprintType {
+      date: String
+      time: String
+    }
+  `
+  createTypes(types)
+}
 
-// exports.sourceNodes = async ({
-//   actions: { createNode },
-//   createContentDigest,
-// }) => {
-//   const response = await fetch(
-//     `http://${process.env.GATSBY_API_URL}/constructors`
-//   )
-//   const { data } = await response.json()
-//   createNode({
-//     id: `constructor-data`,
-//     parent: null,
-//     children: [],
-//     data: data,
-//     internal: {
-//       type: `constructors`,
-//       contentDigest: createContentDigest(data),
-//     },
-//   })
-// }
+exports.sourceNodes = async ({
+  actions: { createNode },
+  createContentDigest,
+}) => {
+  const endpoint = process.env.GATSBY_API_URL
+  const driversRequest = await fetch(`${endpoint}/drivers`)
+  const constructorsRequest = await fetch(`${endpoint}/constructors`)
+  const scheduleRequest = await fetch(`${endpoint}/schedule`)
 
-// exports.sourceNodes = async ({
-//   actions: { createNode },
-//   createContentDigest,
-// }) => {
-//   const response = await fetch(`http://${process.env.GATSBY_API_URL}/schedule`)
-//   const { data } = await response.json()
-//   createNode({
-//     id: `schedule-data`,
-//     parent: null,
-//     children: [],
-//     data: data,
-//     internal: {
-//       type: `schedule`,
-//       contentDigest: createContentDigest(data),
-//     },
-//   })
-// }
+  const driversData = await driversRequest.json()
+  const constructorsData = await constructorsRequest.json()
+  const scheduleData = await scheduleRequest.json()
+
+  createNode({
+    id: `constructor-data`,
+    parent: null,
+    children: [],
+    data: constructorsData.data[0],
+    internal: {
+      type: `constructors`,
+      contentDigest: createContentDigest(constructorsData.data),
+    },
+  })
+
+  createNode({
+    id: `schedule-data`,
+    parent: null,
+    children: [],
+    data: scheduleData.data,
+    internal: {
+      type: `schedule`,
+      contentDigest: createContentDigest(scheduleData.data),
+    },
+  })
+
+  createNode({
+    id: `driver-data`,
+    parent: null,
+    children: [],
+    data: driversData.data[0],
+    internal: {
+      type: `drivers`,
+      contentDigest: createContentDigest(driversData.data),
+    },
+  })
+}

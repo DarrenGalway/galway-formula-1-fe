@@ -1,3 +1,4 @@
+import { graphql } from 'gatsby'
 import * as React from 'react'
 import { Layout } from '../components/Layout'
 import { getColor } from '../config/teams'
@@ -24,21 +25,20 @@ const Constructor = (constructor: IConstructorStandings) => (
     <span className="flex-1">{constructor.points}</span>
   </li>
 )
-export const ConstructorsPage = () => {
-  const [constructorsData, setConstructorsData] =
-    React.useState<IConstructorStandingsResponse>()
-  const [loading, setLoading] = React.useState(true)
 
-  React.useEffect(() => {
-    ;(async () => {
-      const response = await fetch(`${process.env.GATSBY_API_URL}/constructors`)
-      const { data } = await response.json()
-      setConstructorsData(data[0])
-      console.log(data)
-      setLoading(false)
-    })()
-  }, [])
+interface PageData {
+  data: {
+    constructors: {
+      data: IConstructorStandingsResponse
+    }
+  }
+}
 
+export const ConstructorsPage = ({
+  data: {
+    constructors: { data },
+  },
+}: PageData) => {
   return (
     <Layout
       title="Constructors leaders"
@@ -59,20 +59,40 @@ export const ConstructorsPage = () => {
             Points
           </span>
         </div>
-        {loading && <div className="flex justify-center">Loading...</div>}
-        {!loading && (
-          <ul className="border border-gray-800 rounded">
-            {constructorsData?.ConstructorStandings.map((constructor) => (
-              <Constructor
-                {...constructor}
-                key={constructor.Constructor.constructorId}
-              />
-            ))}
-          </ul>
-        )}
+        <ul className="border border-gray-800 rounded">
+          {data?.ConstructorStandings.map((constructor) => (
+            <Constructor
+              {...constructor}
+              key={constructor.Constructor.constructorId}
+            />
+          ))}
+        </ul>
       </div>
     </Layout>
   )
 }
+
+export const query = graphql`
+  {
+    constructors {
+      data {
+        ConstructorStandings {
+          points
+          position
+          positionText
+          wins
+          Constructor {
+            constructorId
+            name
+            nationality
+            url
+          }
+        }
+        round
+        season
+      }
+    }
+  }
+`
 
 export default ConstructorsPage
