@@ -4,15 +4,21 @@ import { Layout } from '../components/Layout'
 import { IRace } from '../types'
 import { graphql } from 'gatsby'
 
-const formatDate = (date: string, time: string) => {
-  const parsedDate = DateTime.fromISO(date).toLocaleString(DateTime.DATE_HUGE)
-  const parsedTime = DateTime.fromISO(time).toLocaleString(DateTime.TIME_SIMPLE)
-  return `${parsedDate} at ${parsedTime}`
-}
-
 const Race = (race: IRace) => {
-  const isComplete =
-    DateTime.now().startOf('day') > DateTime.fromISO(race.date).startOf('day')
+  const formatDate = React.useCallback((date: string, time: string) => {
+    const parsedDate = DateTime.fromISO(date).toLocaleString(DateTime.DATE_HUGE)
+    const parsedTime = DateTime.fromISO(time).toLocaleString(
+      DateTime.TIME_SIMPLE
+    )
+    return `${parsedDate} at ${parsedTime}`
+  }, [])
+
+  const isComplete = React.useMemo(
+    () =>
+      DateTime.now().startOf('day') >
+      DateTime.fromISO(race.date).startOf('day'),
+    [race.date]
+  )
   return (
     <li
       className={`grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
@@ -70,19 +76,32 @@ export const SchedulePage = ({
   },
 }: PageData) => {
   const [upcoming, setUpcoming] = React.useState(true)
-  const completedRaces = data
-    ?.filter(
-      (race) =>
-        DateTime.now().startOf('day') >
-        DateTime.fromISO(race.date).startOf('day')
-    )
-    .reverse()
-  const upcomingRaces = data?.filter(
-    (race) =>
-      DateTime.now().startOf('day') < DateTime.fromISO(race.date).startOf('day')
+  const completedRaces = React.useMemo(
+    () =>
+      data
+        .filter(
+          (race) =>
+            DateTime.now().startOf('day') >
+            DateTime.fromISO(race.date).startOf('day')
+        )
+        .reverse(),
+    [data]
   )
 
-  const races = upcoming ? upcomingRaces : completedRaces
+  const upcomingRaces = React.useMemo(
+    () =>
+      data?.filter(
+        (race) =>
+          DateTime.now().startOf('day') <
+          DateTime.fromISO(race.date).startOf('day')
+      ),
+    [data]
+  )
+
+  const races = React.useMemo(
+    () => (upcoming ? upcomingRaces : completedRaces),
+    [upcoming]
+  )
 
   return (
     <Layout title="Schedule" description="Formula 1 schedule">
