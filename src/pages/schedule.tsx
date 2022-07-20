@@ -106,7 +106,7 @@ export const SchedulePage = ({
           </button>
         </div>
 
-        <div className="hidden lg:grid grid-col-s2 p-4 text-gray-400 uppercase tracking-wider text-xs">
+        <div className="hidden lg:grid grid-cols-2 p-4 text-gray-400 uppercase tracking-wider text-xs">
           <span>Name</span>
           <span>Date</span>
         </div>
