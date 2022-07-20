@@ -11,5 +11,5 @@ jobs:
       - name: Curl request
         shell: bash
         env:
-          NETLIFY_DEPLOY_HOOK: ${{ secrets.NETLIFY_DEPLOY_HOOK }}
+          NETLIFY_DEPLOY_HOOK: ${{ secrets.NetlifyDeployHook }}
         run: curl -X POST -d {} "$NETLIFY_DEPLOY_HOOK"
