@@ -4,27 +4,23 @@ import { Layout } from '../components/Layout'
 import { getColor } from '../config/teams'
 import { IConstructorStandings, IConstructorStandingsResponse } from '../types'
 
-const Constructor = (constructor: IConstructorStandings) => (
-  <li className="flex border-b border-gray-800 last:border-none p-4">
-    <span className="flex-1">{constructor.position}</span>
-    <span
-      style={{
-        color: getColor(constructor.Constructor.constructorId),
-      }}
-      className="flex-1 flex"
-    >
+const Constructor = (constructor: IConstructorStandings) => {
+  return (
+    <li className="flex border-b border-gray-800 last:border-none p-4">
+      <span className="flex-none w-16">{constructor.position}</span>
       <span
-        className="w-1 h-full rounded mr-2"
-        style={{
-          backgroundColor: getColor(constructor.Constructor.constructorId),
-        }}
-      ></span>
-      {constructor.Constructor.name}
-    </span>
-    <span className="flex-1">{constructor.Constructor.nationality}</span>
-    <span className="flex-1">{constructor.points}</span>
-  </li>
-)
+        className="flex-1 flex"
+        style={{ color: getColor(constructor.Constructor.constructorId) }}
+      >
+        {constructor.Constructor.name}
+      </span>
+      <span className="flex-1 hidden lg:block">
+        {constructor.Constructor.nationality}
+      </span>
+      <span className="flex-none w-16">{constructor.points}</span>
+    </li>
+  )
+}
 
 interface PageData {
   data: {
@@ -46,16 +42,16 @@ export const ConstructorsPage = ({
     >
       <div className="container mx-auto px-4">
         <div className="flex p-4">
-          <span className="flex-1 text-xs uppercase tracking-wider text-gray-400">
+          <span className="flex-none w-16 text-xs uppercase tracking-wider text-gray-400">
             Pos
           </span>
           <span className="flex-1 text-xs uppercase tracking-wider text-gray-400">
             Constructor
           </span>
-          <span className="flex-1 text-xs uppercase tracking-wider text-gray-400">
+          <span className="flex-1 hidden lg:block text-xs uppercase tracking-wider text-gray-400">
             Nationality
           </span>
-          <span className="flex-1 text-xs uppercase tracking-wider text-gray-400">
+          <span className="flex-none w-16 text-xs uppercase tracking-wider text-gray-400">
             Points
           </span>
         </div>
