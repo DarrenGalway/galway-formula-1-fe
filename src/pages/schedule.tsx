@@ -16,7 +16,7 @@ const Race = (race: IRace) => {
   const isComplete = React.useMemo(
     () =>
       DateTime.now().startOf('day') >
-      DateTime.fromISO(race.date).startOf('day'),
+      DateTime.fromISO(race.date).startOf('day').plus({ hours: 12 }),
     [race.date]
   )
   return (
@@ -82,7 +82,7 @@ export const SchedulePage = ({
         .filter(
           (race) =>
             DateTime.now().startOf('day') >
-            DateTime.fromISO(race.date).startOf('day')
+            DateTime.fromISO(race.date).startOf('day').plus({ hours: 12 })
         )
         .reverse(),
     [data]
@@ -93,7 +93,7 @@ export const SchedulePage = ({
       data?.filter(
         (race) =>
           DateTime.now().startOf('day') <
-          DateTime.fromISO(race.date).startOf('day')
+          DateTime.fromISO(race.date).startOf('day').plus({ hours: 12 })
       ),
     [data]
   )
