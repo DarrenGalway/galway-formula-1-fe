@@ -4,25 +4,20 @@ import { Layout } from '../components/Layout'
 import { IRace } from '../types'
 import { graphql } from 'gatsby'
 
-const Race = (race: IRace) => {
-  const formatDate = React.useCallback((date: string, time: string) => {
-    const parsedDate = DateTime.fromISO(date).toLocaleString(DateTime.DATE_HUGE)
-    const parsedTime = DateTime.fromISO(time).toLocaleString(
-      DateTime.TIME_SIMPLE
-    )
-    return `${parsedDate} at ${parsedTime}`
-  }, [])
+const createDateTime = (date: string, time: string) =>
+  DateTime.fromISO(`${date}T${time}`)
 
-  const isComplete = React.useMemo(
-    () =>
-      DateTime.now().startOf('day') >
-      DateTime.fromISO(race.date).startOf('day').plus({ hours: 12 }),
-    [race.date]
-  )
+const formatDate = (date: string, time: string) =>
+  createDateTime(date, time).toLocaleString(DateTime.DATETIME_FULL)
+
+const isComplete = (date: string, time: string) =>
+  DateTime.now() > createDateTime(date, time).plus({ hours: 2 })
+
+const Race = (race: IRace) => {
   return (
     <li
       className={`grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
-        isComplete && 'opacity-50'
+        isComplete(race.date, race.time) && 'opacity-50'
       }`}
     >
       <span>{race.raceName}</span>
@@ -77,24 +72,12 @@ export const SchedulePage = ({
 }: PageData) => {
   const [upcoming, setUpcoming] = React.useState(true)
   const completedRaces = React.useMemo(
-    () =>
-      data
-        .filter(
-          (race) =>
-            DateTime.now().startOf('day') >
-            DateTime.fromISO(race.date).startOf('day').plus({ hours: 12 })
-        )
-        .reverse(),
+    () => data.filter(({ date, time }) => isComplete(date, time)).reverse(),
     [data]
   )
 
   const upcomingRaces = React.useMemo(
-    () =>
-      data?.filter(
-        (race) =>
-          DateTime.now().startOf('day') <
-          DateTime.fromISO(race.date).startOf('day').plus({ hours: 12 })
-      ),
+    () => data.filter(({ date, time }) => !isComplete(date, time)),
     [data]
   )
 
