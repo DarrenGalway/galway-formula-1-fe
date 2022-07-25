@@ -8,7 +8,7 @@ const createDateTime = (date: string, time: string) =>
   DateTime.fromISO(`${date}T${time}`)
 
 const formatDate = (date: string, time: string) =>
-  createDateTime(date, time).toLocaleString(DateTime.DATETIME_FULL)
+  createDateTime(date, time).toFormat("ccc LLL, d 'at' h:mma")
 
 const isComplete = (date: string, time: string) =>
   DateTime.now() > createDateTime(date, time).plus({ hours: 2 })
@@ -96,7 +96,7 @@ export const SchedulePage = ({
             }`}
             onClick={() => setUpcoming(true)}
           >
-            Upcoming
+            Upcoming ({upcomingRaces.length})
           </button>
           <button
             className={`p-4 uppercase tracking-wider text-sm ${
@@ -104,13 +104,13 @@ export const SchedulePage = ({
             }`}
             onClick={() => setUpcoming(false)}
           >
-            Completed
+            Completed ({completedRaces.length})
           </button>
         </div>
 
         <div className="hidden lg:grid grid-cols-2 p-4 text-gray-400 uppercase tracking-wider text-xs">
           <span>Name</span>
-          <span>Date</span>
+          <span>Date (year: {DateTime.now().toFormat('y')})</span>
         </div>
 
         <ul className="border border-gray-800 rounded">
