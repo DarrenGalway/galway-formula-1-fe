@@ -1,26 +1,8 @@
-import { graphql } from 'gatsby'
 import * as React from 'react'
+import { graphql } from 'gatsby'
 import { Layout } from '../components/Layout'
-import { getColor } from '../config/teams'
-import { IConstructorStandings, IConstructorStandingsResponse } from '../types'
-
-const Constructor = (constructor: IConstructorStandings) => {
-  return (
-    <li className="flex border-b border-gray-800 last:border-none p-4">
-      <span className="flex-none w-16">{constructor.position}</span>
-      <span
-        className="flex-1 flex"
-        style={{ color: getColor(constructor.Constructor.constructorId) }}
-      >
-        {constructor.Constructor.name}
-      </span>
-      <span className="flex-1 hidden lg:block">
-        {constructor.Constructor.nationality}
-      </span>
-      <span className="flex-none w-16">{constructor.points}</span>
-    </li>
-  )
-}
+import { IConstructorStandingsResponse } from '../types'
+import Constructor from '../components/Constructor'
 
 interface PageData {
   data: {
