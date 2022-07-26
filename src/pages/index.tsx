@@ -8,17 +8,17 @@ export const IndexPage = () => {
       <div className="container mx-auto px-4">
         <ul>
           <li>
-            <Link className="text-teal-300 underline" to="/schedule/">
+            <Link className="text-teal-300 underline" to="/schedule">
               Schedule
             </Link>
           </li>
           <li>
-            <Link className="text-teal-300 underline" to="/drivers/">
+            <Link className="text-teal-300 underline" to="/drivers">
               Drivers
             </Link>
           </li>
           <li>
-            <Link className="text-teal-300 underline" to="/constructors/">
+            <Link className="text-teal-300 underline" to="/constructors">
               Constructors
             </Link>
           </li>

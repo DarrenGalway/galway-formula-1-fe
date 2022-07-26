@@ -40,21 +40,21 @@ export const Layout = ({ children, title, description }: LayoutProps) => {
               >
                 <Link
                   className="p-4"
-                  to="/schedule/"
+                  to="/schedule"
                   activeClassName="text-teal-300"
                 >
                   Schedule
                 </Link>
                 <Link
                   className="p-4"
-                  to="/drivers/"
+                  to="/drivers"
                   activeClassName="text-teal-300"
                 >
                   Drivers
                 </Link>
                 <Link
                   className="p-4"
-                  to="/constructors/"
+                  to="/constructors"
                   activeClassName="text-teal-300"
                 >
                   Constructors

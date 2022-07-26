@@ -8,6 +8,7 @@ const config: GatsbyConfig = {
     title: `formula-1`,
     siteUrl: `https://www.yourdomain.tld`,
   },
+  trailingSlash: 'never',
   graphqlTypegen: true,
   plugins: [
     'gatsby-plugin-image',
