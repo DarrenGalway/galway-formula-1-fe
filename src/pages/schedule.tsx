@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { Layout } from '../components/Layout'
 import { IRace } from '../types'
 import { graphql } from 'gatsby'
+import { motion, useAnimation } from 'framer-motion'
 
 const createDateTime = (date: string, time: string) =>
   DateTime.fromISO(`${date}T${time}`)
@@ -13,49 +14,52 @@ const formatDate = (date: string, time: string) =>
 const isComplete = (date: string, time: string) =>
   DateTime.now() > createDateTime(date, time).plus({ hours: 2 })
 
-const Race = (race: IRace) => {
-  return (
-    <li
-      className={`grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
-        isComplete(race.date, race.time) && 'opacity-50'
-      }`}
-    >
-      <span>{race.raceName}</span>
-      <div className="grid grid-cols-2">
-        <span className="border-b py-2 border-gray-800">FP1:</span>
-        <span className="border-b py-2 border-gray-800">
-          {formatDate(race.FirstPractice.date, race.FirstPractice.time)}
-        </span>
-        <span className="border-b py-2 border-gray-800">FP2:</span>
-        <span className="border-b py-2 border-gray-800">
-          {formatDate(race.SecondPractice.date, race.SecondPractice.time)}
-        </span>
-        {race.ThirdPractice && (
-          <>
-            <span className="border-b py-2 border-gray-800">FP3:</span>
-            <span className="border-b py-2 border-gray-800">
-              {formatDate(race.ThirdPractice.date, race.ThirdPractice.time)}
-            </span>
-          </>
-        )}
-        <span className="border-b py-2 border-gray-800">Quali:</span>
-        <span className="border-b py-2 border-gray-800">
-          {formatDate(race.Qualifying.date, race.Qualifying.time)}
-        </span>
-        {race.Sprint && (
-          <>
-            <span className="border-b py-2 border-gray-800">Sprint:</span>
-            <span className="border-b py-2 border-gray-800">
-              {formatDate(race.Sprint.date, race.Sprint.time)}
-            </span>
-          </>
-        )}
-        <span className="py-2">Race:</span>
-        <span className="py-2">{formatDate(race.date, race.time)}</span>
-      </div>
-    </li>
-  )
-}
+const Race = React.forwardRef<HTMLLIElement, { race: IRace }>(
+  ({ race }, ref) => {
+    return (
+      <li
+        {...{ ref }}
+        className={`grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
+          isComplete(race.date, race.time) && 'opacity-50'
+        }`}
+      >
+        <span>{race.raceName}</span>
+        <div className="grid grid-cols-2">
+          <span className="border-b py-2 border-gray-800">FP1:</span>
+          <span className="border-b py-2 border-gray-800">
+            {formatDate(race.FirstPractice.date, race.FirstPractice.time)}
+          </span>
+          <span className="border-b py-2 border-gray-800">FP2:</span>
+          <span className="border-b py-2 border-gray-800">
+            {formatDate(race.SecondPractice.date, race.SecondPractice.time)}
+          </span>
+          {race.ThirdPractice && (
+            <>
+              <span className="border-b py-2 border-gray-800">FP3:</span>
+              <span className="border-b py-2 border-gray-800">
+                {formatDate(race.ThirdPractice.date, race.ThirdPractice.time)}
+              </span>
+            </>
+          )}
+          <span className="border-b py-2 border-gray-800">Quali:</span>
+          <span className="border-b py-2 border-gray-800">
+            {formatDate(race.Qualifying.date, race.Qualifying.time)}
+          </span>
+          {race.Sprint && (
+            <>
+              <span className="border-b py-2 border-gray-800">Sprint:</span>
+              <span className="border-b py-2 border-gray-800">
+                {formatDate(race.Sprint.date, race.Sprint.time)}
+              </span>
+            </>
+          )}
+          <span className="py-2">Race:</span>
+          <span className="py-2">{formatDate(race.date, race.time)}</span>
+        </div>
+      </li>
+    )
+  }
+)
 
 interface PageData {
   data: {
@@ -65,16 +69,26 @@ interface PageData {
   }
 }
 
+const MotionRace = motion(Race)
+
 export const SchedulePage = ({
   data: {
     schedule: { data },
   },
 }: PageData) => {
+  const controls = useAnimation()
   const [upcoming, setUpcoming] = React.useState(true)
   const completedRaces = React.useMemo(
     () => data.filter(({ date, time }) => isComplete(date, time)).reverse(),
     [data]
   )
+  React.useEffect(() => {
+    controls.start((i) => ({
+      opacity: 1,
+      x: 0,
+      transition: { delay: i * 0.05 },
+    }))
+  }, [data, upcoming])
 
   const upcomingRaces = React.useMemo(
     () => data.filter(({ date, time }) => !isComplete(date, time)),
@@ -114,8 +128,14 @@ export const SchedulePage = ({
         </div>
 
         <ul className="border border-gray-800 rounded">
-          {races?.map((race: IRace) => (
-            <Race {...race} key={race.raceName} />
+          {races?.map((race, i) => (
+            <MotionRace
+              custom={i}
+              animate={controls}
+              initial={{ opacity: 0, x: -10 }}
+              {...{ race }}
+              key={race.raceName}
+            />
           ))}
         </ul>
       </div>

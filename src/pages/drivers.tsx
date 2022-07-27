@@ -3,22 +3,30 @@ import { Layout } from '../components/Layout'
 import { IDriverStandings } from '../types'
 import { getColor } from '../config/teams'
 import { graphql } from 'gatsby'
+import { motion, useAnimation } from 'framer-motion'
 
-const Driver = (driver: IDriverStandings) => (
-  <li className="flex border-b border-gray-800 last:border-none p-4">
-    <span className="flex-none w-16">{driver.position}</span>
-    <span className="flex-1">
-      {driver.Driver.givenName} {driver.Driver.familyName}
-    </span>
-    <span
-      style={{ color: getColor(driver.Constructors[0].constructorId) }}
-      className="flex-1 hidden lg:block"
+const Driver = React.forwardRef<HTMLLIElement, { driver: IDriverStandings }>(
+  ({ driver }, ref) => (
+    <li
+      className="flex border-b border-gray-800 last:border-none p-4"
+      {...{ ref }}
     >
-      {driver.Constructors[0].name}
-    </span>
-    <span className="hidden lg:block flex-1">{driver.Driver.nationality}</span>
-    <span className="flex-none w-16">{driver.points}</span>
-  </li>
+      <span className="flex-none w-16">{driver.position}</span>
+      <span className="flex-1">
+        {driver.Driver.givenName} {driver.Driver.familyName}
+      </span>
+      <span
+        style={{ color: getColor(driver.Constructors[0].constructorId) }}
+        className="flex-1 hidden lg:block"
+      >
+        {driver.Constructors[0].name}
+      </span>
+      <span className="hidden lg:block flex-1">
+        {driver.Driver.nationality}
+      </span>
+      <span className="flex-none w-16">{driver.points}</span>
+    </li>
+  )
 )
 
 interface PageData {
@@ -32,11 +40,23 @@ interface PageData {
     }
   }
 }
+
+const MotionDriver = motion(Driver)
+
 export const DriversPage = ({
   data: {
     drivers: { data },
   },
 }: PageData) => {
+  const controls = useAnimation()
+  React.useEffect(() => {
+    controls.start((i) => ({
+      opacity: 1,
+      x: 0,
+      transition: { delay: i * 0.05 },
+    }))
+  }, [data])
+
   return (
     <Layout
       title="Drivers leaders"
@@ -61,8 +81,14 @@ export const DriversPage = ({
           </span>
         </div>
         <ul className="border border-gray-800 rounded">
-          {data?.DriverStandings.map((driver: any) => (
-            <Driver {...driver} key={driver.Driver.driverId} />
+          {data?.DriverStandings.map((driver, i) => (
+            <MotionDriver
+              custom={i}
+              animate={controls}
+              initial={{ opacity: 0, x: -10 }}
+              {...{ driver }}
+              key={driver.Driver.driverId}
+            />
           ))}
         </ul>
       </div>
