@@ -86,7 +86,7 @@ export const SchedulePage = ({
     controls.start((i) => ({
       opacity: 1,
       x: 0,
-      transition: { delay: i * 0.05 },
+      transition: { delay: i * 0.2 },
     }))
   }, [data, upcoming])
 
