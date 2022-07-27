@@ -7,8 +7,8 @@ import { motion, useAnimation } from 'framer-motion'
 
 const Driver = React.forwardRef<
   HTMLLIElement,
-  { driver: IDriverStandings; pointDelta: number }
->(({ driver, pointDelta }, ref) => (
+  { driver: IDriverStandings; pointsDelta: number }
+>(({ driver, pointsDelta }, ref) => (
   <li
     className="flex border-b border-gray-800 last:border-none p-4"
     {...{ ref }}
@@ -26,8 +26,8 @@ const Driver = React.forwardRef<
     <span className="hidden lg:block flex-1">{driver.Driver.nationality}</span>
     <span className="flex-none w-24 flex items-center">
       <span>{driver.points}</span>
-      {pointDelta > 0 && (
-        <span className="text-red-500 text-xs ml-auto">-{pointDelta}</span>
+      {pointsDelta > 0 && (
+        <span className="text-red-400 text-xs ml-auto">-{pointsDelta}</span>
       )}
     </span>
   </li>
@@ -68,7 +68,7 @@ export const DriversPage = ({
     >
       <div className="container mx-auto px-4">
         <div className="flex p-4">
-          <span className="flex-none w-24 text-xs uppercase tracking-wider text-gray-400">
+          <span className="flex-none w-16 text-xs uppercase tracking-wider text-gray-400">
             Pos
           </span>
           <span className="flex-1 text-xs uppercase tracking-wider text-gray-400">
@@ -92,7 +92,7 @@ export const DriversPage = ({
               initial={{ opacity: 0, x: -10 }}
               {...{
                 driver,
-                pointDelta:
+                pointsDelta:
                   parseInt(data?.DriverStandings[0].points) -
                   parseInt(driver.points),
               }}

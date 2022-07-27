@@ -6,8 +6,8 @@ import { IConstructorStandings } from '../types'
 
 const Constructor = React.forwardRef<
   HTMLLIElement,
-  { builder: IConstructorStandings }
->(({ builder }, ref) => {
+  { builder: IConstructorStandings; pointsDelta: number }
+>(({ builder, pointsDelta }, ref) => {
   const { images } = useStaticQuery(graphql`
     query carQuery {
       images: allFile(filter: { relativeDirectory: { eq: "cars" } }) {
@@ -50,7 +50,12 @@ const Constructor = React.forwardRef<
       <span className="flex-1 hidden lg:block">
         {builder.Constructor.nationality}
       </span>
-      <span className="flex-none w-16">{builder.points}</span>
+      <span className="flex-none w-24 flex items-center">
+        <span>{builder.points}</span>
+        {pointsDelta > 0 && (
+          <span className="text-red-400 text-xs ml-auto">-{pointsDelta}</span>
+        )}
+      </span>
     </li>
   )
 })

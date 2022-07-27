@@ -45,17 +45,23 @@ export const ConstructorsPage = ({
           <span className="flex-1 hidden lg:block text-xs uppercase tracking-wider text-gray-400">
             Nationality
           </span>
-          <span className="flex-none w-16 text-xs uppercase tracking-wider text-gray-400">
+          <span className="flex-none w-24 text-xs uppercase tracking-wider text-gray-400">
             Points
           </span>
         </div>
+
         <ul className="border border-gray-800 rounded">
           {data?.ConstructorStandings.map((builder, i) => (
             <MotionConstructor
               custom={i}
               animate={controls}
               initial={{ opacity: 0, x: -10 }}
-              {...{ builder }}
+              {...{
+                builder,
+                pointsDelta:
+                  parseInt(data?.ConstructorStandings[0].points) -
+                  parseInt(builder.points),
+              }}
               key={builder.Constructor.constructorId}
             />
           ))}

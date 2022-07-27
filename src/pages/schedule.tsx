@@ -14,16 +14,35 @@ const formatDate = (date: string, time: string) =>
 const isComplete = (date: string, time: string) =>
   DateTime.now() > createDateTime(date, time).plus({ hours: 2 })
 
+const CompletedVisual = ({
+  completed,
+  total,
+}: {
+  completed: number
+  total: number
+}) => {
+  return (
+    <div className="w-full h-1 flex-none bg-gray-800">
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${(completed / total) * 100}%` }}
+        transition={{ ease: 'easeOut', duration: 1.5 }}
+        className="bg-teal-300 text-teal-900 h-full text-xs text-center"
+      ></motion.div>
+    </div>
+  )
+}
+
 const Race = React.forwardRef<HTMLLIElement, { race: IRace }>(
   ({ race }, ref) => {
     return (
       <li
         {...{ ref }}
-        className={`grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
-          isComplete(race.date, race.time) && 'opacity-50'
+        className={`text-sm lg:text-base grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
+          isComplete(race.date, race.time) && 'text-gray-500'
         }`}
       >
-        <span>{race.raceName}</span>
+        <span className="mb-4 lg:mb-0">{race.raceName}</span>
         <div className="grid grid-cols-2">
           <span className="border-b py-2 border-gray-800">FP1:</span>
           <span className="border-b py-2 border-gray-800">
@@ -86,7 +105,7 @@ export const SchedulePage = ({
     controls.start((i) => ({
       opacity: 1,
       x: 0,
-      transition: { delay: i * 0.2 },
+      transition: { delay: i * 0.1 },
     }))
   }, [data, upcoming])
 
@@ -103,7 +122,7 @@ export const SchedulePage = ({
   return (
     <Layout title="Schedule" description="Formula 1 schedule">
       <div className="container mx-auto px-4">
-        <div className="flex mb-4 border-b border-gray-800 py-2">
+        <div className="flex flex-wrap mb-4 items-center py-2">
           <button
             className={`p-4 mr-2 uppercase tracking-wider text-sm ${
               upcoming && 'text-teal-300 bg-gray-800 rounded'
@@ -120,6 +139,10 @@ export const SchedulePage = ({
           >
             Completed ({completedRaces.length})
           </button>
+          <CompletedVisual
+            completed={completedRaces.length}
+            total={data.length}
+          />
         </div>
 
         <div className="hidden lg:grid grid-cols-2 p-4 text-gray-400 uppercase tracking-wider text-xs">
@@ -132,7 +155,7 @@ export const SchedulePage = ({
             <MotionRace
               custom={i}
               animate={controls}
-              initial={{ opacity: 0, x: -10 }}
+              initial={{ opacity: 0 }}
               {...{ race }}
               key={race.raceName}
             />
