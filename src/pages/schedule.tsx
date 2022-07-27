@@ -124,7 +124,7 @@ export const SchedulePage = ({
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap mb-4 items-center py-2">
           <button
-            className={`p-4 mr-2 uppercase tracking-wider text-sm ${
+            className={`p-4 flex-1 lg:flex-none mr-2 uppercase tracking-wider text-sm ${
               upcoming && 'text-teal-300 bg-gray-800 rounded'
             }`}
             onClick={() => setUpcoming(true)}
@@ -132,7 +132,7 @@ export const SchedulePage = ({
             Upcoming ({upcomingRaces.length})
           </button>
           <button
-            className={`p-4 uppercase tracking-wider text-sm ${
+            className={`p-4 flex-1 lg:flex-none uppercase tracking-wider text-sm ${
               !upcoming && 'text-teal-300 bg-gray-800 rounded'
             }`}
             onClick={() => setUpcoming(false)}
