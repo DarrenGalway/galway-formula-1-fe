@@ -48,7 +48,7 @@ const CompletedRace = React.forwardRef<HTMLLIElement, { race: any }>(
             <span className="p-2">Time</span>
           </div>
           {race.results.Results.map((r: any, index: number) => (
-            <div className="grid grid-cols-4">
+            <div className="grid grid-cols-4" key={r.Driver.familyName}>
               <span className="p-2">{index + 1}</span>
               <span className="p-2">
                 {r.Driver.familyName} {r.Driver.givenName}
