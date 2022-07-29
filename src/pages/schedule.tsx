@@ -33,14 +33,41 @@ const CompletedVisual = ({
   )
 }
 
+const CompletedRace = React.forwardRef<HTMLLIElement, { race: any }>(
+  ({ race }, ref) => {
+    return (
+      <li
+        {...{ ref }}
+        className={`text-sm lg:text-base grid lg:grid-cols-2 border-b border-gray-800 p-4`}
+      >
+        <span className="mb-4 lg:mb-0">{race.raceName}</span>
+        <div className="flex flex-col">
+          <div className="grid grid-cols-4 mb-2">
+            <span className="p-2">Finish</span>
+            <span className="p-2">Driver</span>
+            <span className="p-2">Time</span>
+          </div>
+          {race.results.Results.map((r: any, index: number) => (
+            <div className="grid grid-cols-4">
+              <span className="p-2">{index + 1}</span>
+              <span className="p-2">
+                {r.Driver.familyName} {r.Driver.givenName}
+              </span>
+              <span className="p-2">{r.Time ? r.Time?.time : '-'}</span>
+            </div>
+          ))}
+        </div>
+      </li>
+    )
+  }
+)
+
 const Race = React.forwardRef<HTMLLIElement, { race: IRace }>(
   ({ race }, ref) => {
     return (
       <li
         {...{ ref }}
-        className={`text-sm lg:text-base grid lg:grid-cols-2 border-b border-gray-800 p-4 ${
-          isComplete(race.date, race.time) && 'text-gray-500'
-        }`}
+        className={`text-sm lg:text-base grid lg:grid-cols-2 border-b border-gray-800 p-4`}
       >
         <span className="mb-4 lg:mb-0">{race.raceName}</span>
         <div className="grid grid-cols-2">
@@ -85,39 +112,49 @@ interface PageData {
     schedule: {
       data: IRace[]
     }
+    results: {
+      data: any
+    }
   }
 }
 
 const MotionRace = motion(Race)
+const MotionCompletedRace = motion(CompletedRace)
 
-export const SchedulePage = ({
-  data: {
-    schedule: { data },
-  },
-}: PageData) => {
+export const SchedulePage = ({ data: { schedule, results } }: PageData) => {
   const controls = useAnimation()
   const [upcoming, setUpcoming] = React.useState(true)
   const completedRaces = React.useMemo(
-    () => data.filter(({ date, time }) => isComplete(date, time)).reverse(),
-    [data]
+    () =>
+      schedule.data
+        .filter(({ date, time }) => isComplete(date, time))
+        .reverse()
+        .map((race) => ({
+          ...race,
+          results: results.data.find((r: any) => r.raceName === race.raceName),
+        })),
+    [schedule.data, results.data]
   )
+
   React.useEffect(() => {
     controls.start((i) => ({
       opacity: 1,
       x: 0,
       transition: { delay: i * 0.1 },
     }))
-  }, [data, upcoming])
+  }, [schedule.data, upcoming])
 
   const upcomingRaces = React.useMemo(
-    () => data.filter(({ date, time }) => !isComplete(date, time)),
-    [data]
+    () => schedule.data.filter(({ date, time }) => !isComplete(date, time)),
+    [schedule.data]
   )
 
   const races = React.useMemo(
     () => (upcoming ? upcomingRaces : completedRaces),
     [upcoming]
   )
+
+  const Component = upcoming ? MotionRace : MotionCompletedRace
 
   return (
     <Layout title="Schedule" description="Formula 1 schedule">
@@ -141,7 +178,7 @@ export const SchedulePage = ({
           </button>
           <CompletedVisual
             completed={completedRaces.length}
-            total={data.length}
+            total={schedule.data.length}
           />
         </div>
 
@@ -152,7 +189,7 @@ export const SchedulePage = ({
 
         <ul className="border border-gray-800 rounded">
           {races?.map((race, i) => (
-            <MotionRace
+            <Component
               custom={i}
               animate={controls}
               initial={{ opacity: 0 }}
@@ -168,6 +205,24 @@ export const SchedulePage = ({
 
 export const query = graphql`
   {
+    results {
+      data {
+        Results {
+          Driver {
+            givenName
+            familyName
+            driverId
+            permanentNumber
+            nationality
+            code
+          }
+          Time {
+            time
+          }
+        }
+        raceName
+      }
+    }
     schedule {
       data {
         Circuit {

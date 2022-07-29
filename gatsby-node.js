@@ -23,10 +23,12 @@ exports.sourceNodes = async ({
   const driversRequest = await fetch(`${endpoint}/drivers`)
   const constructorsRequest = await fetch(`${endpoint}/constructors`)
   const scheduleRequest = await fetch(`${endpoint}/schedule`)
+  const resultsRequest = await fetch(`${endpoint}/results`)
 
   const driversData = await driversRequest.json()
   const constructorsData = await constructorsRequest.json()
   const scheduleData = await scheduleRequest.json()
+  const resultsData = await resultsRequest.json()
 
   createNode({
     id: `constructor-data`,
@@ -36,6 +38,17 @@ exports.sourceNodes = async ({
     internal: {
       type: `constructors`,
       contentDigest: createContentDigest(constructorsData.data),
+    },
+  })
+
+  createNode({
+    id: `results-data`,
+    parent: null,
+    children: [],
+    data: resultsData.data,
+    internal: {
+      type: `results`,
+      contentDigest: createContentDigest(resultsData.data),
     },
   })
 
